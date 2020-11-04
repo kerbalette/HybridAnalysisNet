@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace HybridAnalysisNet
         private readonly HttpClientHandler _httpClientHandler;
         private readonly JsonSerializer _serializer;
         private readonly Dictionary<string, string> _headerValues;
+        private readonly string _apiUrl = "https://www.hybrid-analysis.com/api/v2";
 
         private string _userAgent;
 
@@ -46,7 +48,7 @@ namespace HybridAnalysisNet
         /// 
         /// </summary>
         /// <param name="apiKey">The API key v2 from hybrid-analysis.com</param>
-        public HybridAnalysis(string apiKey)
+        public HybridAnalysis(string apiKey, bool bypassCertificateCheck = false)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("An API key is required in order for this to function.", nameof(apiKey));
@@ -59,7 +61,9 @@ namespace HybridAnalysisNet
 
             _httpClientHandler = new HttpClientHandler();
             _httpClientHandler.AllowAutoRedirect = true;
-            _httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            if(bypassCertificateCheck)
+                _httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 
             _client = new HttpClient(_httpClientHandler);
             _client.DefaultRequestHeaders.Add("api-key", _headerValues["api-key"]);
@@ -82,9 +86,30 @@ namespace HybridAnalysisNet
             get => _httpClientHandler.Proxy;
             set
             {
-                _httpClientHandler.UseProxy = true != null;
+                _httpClientHandler.UseProxy = true;
                 _httpClientHandler.Proxy = value;
             }
+        }
+
+        public async Task<QuickScan> QuickScanFileAsync(string filePath)
+        {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("File has not been found.", filePath);
+
+            string fileName = filePath;
+
+            using (Stream fs = File.OpenRead(fileName))
+                return await QuickScanFileAsync(fs, fileName);
+        }
+
+        public Task<QuickScan> QuickScanFileAsync(Stream stream, string fileName)
+        {
+            MultipartFormDataContent multi = new MultipartFormDataContent();
+            multi.Add(CreateDocPart());
+            multi.Add(CreateFileContent(stream, fileName));
+
+            return GetResponse<QuickScan>(_apiUrl + "/quick-scan/file", HttpMethod.Post, multi);
+
         }
 
         public Task<QuickScan> QuickScanUrlAsync(string url)
@@ -93,7 +118,18 @@ namespace HybridAnalysisNet
             values.Add("scan_type", "all");
             values.Add("url", url);
 
-            return GetResponse<QuickScan>("https://www.hybrid-analysis.com/api/v2/quick-scan/url", HttpMethod.Post, CreateURLEncodedContent(values));
+            return GetResponse<QuickScan>(_apiUrl + "/quick-scan/url", HttpMethod.Post, CreateURLEncodedContent(values));
+        }
+
+        private HttpContent CreateDocPart()
+        {
+            HttpContent httpContent = new StringContent(_headerValues["api-key"]);
+            httpContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "\"apikey\""
+            };
+
+            return httpContent;
         }
 
         private async Task<T> GetResponse<T>(string url, HttpMethod method, HttpContent content)
@@ -101,12 +137,12 @@ namespace HybridAnalysisNet
             HttpResponseMessage response = await SendRequest(url, method, content).ConfigureAwait(false);
 
             using (Stream responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (StreamReader sr = new StreamReader(responseStream, Encoding.UTF8))
-                using (JsonTextReader jsonTextReader = new JsonTextReader(sr))
-                {
-                    jsonTextReader.CloseInput = false;
-                    return _serializer.Deserialize<T>(jsonTextReader);
-                }
+            using (StreamReader sr = new StreamReader(responseStream, Encoding.UTF8))
+            using (JsonTextReader jsonTextReader = new JsonTextReader(sr))
+            {
+                jsonTextReader.CloseInput = false;
+                return _serializer.Deserialize<T>(jsonTextReader);
+            }
         }
 
         private async Task<HttpResponseMessage> SendRequest(string url, HttpMethod method, HttpContent content)
@@ -120,6 +156,22 @@ namespace HybridAnalysisNet
                 throw new AccessDeniedException("You do not have permission to access this resource");
 
             return response;
+        }
+
+        private HttpContent CreateFileContent(Stream stream, string fileName, bool includeSize = true)
+        {
+            StreamContent fileContent = new StreamContent(stream);
+
+            ContentDispositionHeaderValue disposition = new ContentDispositionHeaderValue("form-data");
+            disposition.Name = "\"file\"";
+            disposition.FileName = "\"" + fileName + "\"";
+
+            if (includeSize)
+                disposition.Size = stream.Length;
+
+            fileContent.Headers.ContentDisposition = disposition;
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            return fileContent;
         }
 
         private HttpContent CreateURLEncodedContent(IDictionary<string, string> values)

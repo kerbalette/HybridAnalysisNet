@@ -19,7 +19,7 @@ namespace HybridAnalysisNet.Tests
         [Fact]
         public async Task UnauthorisedScan()
         {
-            HybridAnalysis hybridAnalysis = new HybridAnalysis("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            HybridAnalysis hybridAnalysis = new HybridAnalysis("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", true);
 
 #if (PROXY)
 

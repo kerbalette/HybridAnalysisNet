@@ -1,4 +1,6 @@
 ﻿
+using System.Text;
+
 namespace HybridAnalysisNet.Tests.TestInternals
 {
     internal static class TestData
