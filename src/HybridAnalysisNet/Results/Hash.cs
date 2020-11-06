@@ -41,7 +41,7 @@ namespace HybridAnalysisNet.Results
         public int Total_Processes { get; set; }
         public int Total_Signatures { get; set; }
         public List<ExtractedFiles> Extracted_Files { get; set; }
-        public string File_MetaData { get; set; }
+        public FileMetaData File_MetaData { get; set; }
         public List<Processes> Processes { get; set; }
         public List<Submissions> Submissions { get; set; }
     }

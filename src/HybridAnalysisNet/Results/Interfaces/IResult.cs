@@ -39,7 +39,7 @@ namespace HybridAnalysisNet.Results.Interfaces
         int Total_Processes { get; set; }
         int Total_Signatures { get; set; }
         List<ExtractedFiles> Extracted_Files { get; set; }
-        string File_MetaData { get; set; }
+        FileMetaData File_MetaData { get; set; }
         List<Processes> Processes { get; set; }
         List<Submissions> Submissions { get; set; }
     }

@@ -23,6 +23,7 @@ namespace HybridAnalysisNet.Objects
         public List<string> Mutants { get; set; }
         public List<string> Handles { get; set; }
         public List<string> Streams { get; set; }
+        public List<string> Script_Calls { get; set; }
         public List<string> Process_Flags { get; set; }
     }
 }
