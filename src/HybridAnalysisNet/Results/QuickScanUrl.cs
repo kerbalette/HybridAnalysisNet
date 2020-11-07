@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace HybridAnalysisNet.Results
 {
-    public class QuickScan
+    public class QuickScanUrl
     {
         [JsonProperty("submission_type")]
         public string SubmissionType { get; set; }

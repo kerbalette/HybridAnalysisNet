@@ -1,6 +1,4 @@
-﻿#define PROXY
-
-using HybridAnalysisNet.Tests.TestInternals;
+﻿using HybridAnalysisNet.Tests.TestInternals;
 using HybridAnalysisNet.Exceptions;
 using System;
 using System.Linq;
@@ -20,15 +18,8 @@ namespace HybridAnalysisNet.Tests
         public async Task UnauthorisedScan()
         {
             HybridAnalysis hybridAnalysis = new HybridAnalysis("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", true);
-
-#if (PROXY)
-
-            WebProxy webProxy = new WebProxy {Address = new Uri("http://127.0.0.1:8080")};
-            hybridAnalysis.Proxy = webProxy;
-#endif
-
             await Assert.ThrowsAsync<AccessDeniedException>(async () =>
-                await hybridAnalysis.QuickScanUrlAsync(TestData.KnownUrls.First()));
+                await hybridAnalysis.QuickScan.GetUrlAsync(TestData.KnownUrls.Last()));
 
         }
     }

@@ -14,22 +14,20 @@ namespace HybridAnalysisNet.Tests
         public async Task QuickScanKnownUrl()
         {
             HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true);
-            WebProxy webProxy = new WebProxy { Address = new Uri("http://127.0.0.1:8080") };
-            hybridAnalysis.Proxy = webProxy;
 
-            QuickScan quickscan = await hybridAnalysis.QuickScanUrlAsync(TestData.KnownUrls.Last());
+            QuickScanUrl quickscan = await hybridAnalysis.QuickScan.GetUrlAsync(TestData.KnownUrls.Last());
             //TODO Start from here
             Assert.Equal(true || false, quickscan.Finished);
         }
 
-        [Fact]
-        public async Task QuickScanFile()
-        {
-            HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true);
-            WebProxy webProxy = new WebProxy { Address = new Uri("http://127.0.0.1:8080") };
-            hybridAnalysis.Proxy = webProxy;
+        //[Fact]
+        //public async Task QuickScanFile()
+        //{
+        //    HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true);
+        //    WebProxy webProxy = new WebProxy { Address = new Uri("http://127.0.0.1:8080") };
+        //    hybridAnalysis.Proxy = webProxy;
 
-            QuickScan quickScan = await hybridAnalysis.QuickScanFileAsync(@"filename");
-        }
+        //    QuickScanUrl quickScan = await hybridAnalysis.QuickScanFileAsync(@"filename");
+        //}
     }
 }
