@@ -15,7 +15,9 @@ namespace HybridAnalysisNet.Tests
         [Fact]
         public async Task SandboxReport_GetValidIdSummary_ShouldBeValid()
         {
-            HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true);
+            
+            HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true, this.webProxy);
+            
             ReportSummary reportSummary = await hybridAnalysis.SandboxReport.GetSummaryAsync(TestData.JobIds.First());
             
 

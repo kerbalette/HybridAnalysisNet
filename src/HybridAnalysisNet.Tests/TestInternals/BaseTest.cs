@@ -1,10 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace HybridAnalysisNet.Tests.TestInternals
 {
     public abstract class BaseTest
     {
-        protected string ApiKey;
+        protected readonly string ApiKey;
+        protected readonly WebProxy webProxy;
+
         public IConfiguration Configuration { get; }
         protected BaseTest()
         {
@@ -13,7 +17,10 @@ namespace HybridAnalysisNet.Tests.TestInternals
                 .Build();
 
             ApiKey = config["APIKey"];
+            string proxyConfig = config["Proxy"];
 
+            if (proxyConfig != null)
+                webProxy = new WebProxy { Address = new Uri(proxyConfig) };
         }
     }
 }

@@ -12,12 +12,12 @@ namespace HybridAnalysisNet.Processors
     {
         private RespositoryHttp _respositoryHttp;
 
-        public SandboxReport(string apiKey, bool bypassCertificateCheck = false)
+        public SandboxReport(string apiKey, bool bypassCertificateCheck = false, WebProxy webProxy = null)
         {
             _respositoryHttp = new RespositoryHttp(apiKey, bypassCertificateCheck);
             
-            WebProxy webProxy = new WebProxy { Address = new Uri("http://192.168.88.16:8080") };
-            _respositoryHttp.Proxy = webProxy;
+            if (webProxy != null)
+                _respositoryHttp.Proxy = webProxy;
         }
 
         public Task<ReportSummary> GetSummaryAsync(string jobId)

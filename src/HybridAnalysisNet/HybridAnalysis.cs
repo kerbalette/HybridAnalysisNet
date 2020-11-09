@@ -24,10 +24,10 @@ namespace HybridAnalysisNet
         /// 
         /// </summary>
         /// <param name="apiKey">The API key v2 from hybrid-analysis.com</param>
-        public HybridAnalysis(string apiKey, bool bypassCertificateCheck = false)
+        public HybridAnalysis(string apiKey, bool bypassCertificateCheck = false, WebProxy webProxy = null)
         {
-            _sandboxReport = new SandboxReport(apiKey, bypassCertificateCheck);
-            _quickScan = new QuickScan(apiKey, bypassCertificateCheck);
+            _sandboxReport = new SandboxReport(apiKey, bypassCertificateCheck, webProxy);
+            _quickScan = new QuickScan(apiKey, bypassCertificateCheck, webProxy);
         }
         public SandboxReport SandboxReport
         {
