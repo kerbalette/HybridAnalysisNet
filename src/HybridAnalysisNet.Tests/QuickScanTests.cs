@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HybridAnalysisNet.Results;
 using HybridAnalysisNet.Tests.TestInternals;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace HybridAnalysisNet.Tests
 {
@@ -29,5 +30,8 @@ namespace HybridAnalysisNet.Tests
 
         //    QuickScanUrl quickScan = await hybridAnalysis.QuickScanFileAsync(@"filename");
         //}
+        public QuickScanTests(ITestOutputHelper output) : base(output)
+        {
+        }
     }
 }

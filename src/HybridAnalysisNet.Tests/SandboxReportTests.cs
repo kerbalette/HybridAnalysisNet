@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace HybridAnalysisNet.Tests
 {
@@ -19,11 +20,16 @@ namespace HybridAnalysisNet.Tests
             HybridAnalysis hybridAnalysis = new HybridAnalysis(this.ApiKey, true, this.webProxy);
             
             ReportSummary reportSummary = await hybridAnalysis.SandboxReport.GetSummaryAsync(TestData.JobIds.First());
-            
+
 
             //QuickScan quickscan = await hybridAnalysis.QuickScanUrlAsync(TestData.KnownUrls.Last());
             //TODO Start from here
+            testOutputHelper.WriteLine(reportSummary.Job_Id);
             Assert.Equal(true,true);
+        }
+
+        public SandboxReportTests(ITestOutputHelper output) : base(output)
+        {
         }
     }
 }

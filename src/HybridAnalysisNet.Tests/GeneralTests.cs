@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-
+using Xunit.Abstractions;
 
 
 namespace HybridAnalysisNet.Tests
@@ -21,6 +21,10 @@ namespace HybridAnalysisNet.Tests
             await Assert.ThrowsAsync<AccessDeniedException>(async () =>
                 await hybridAnalysis.QuickScan.GetUrlAsync(TestData.KnownUrls.Last()));
 
+        }
+
+        public GeneralTests(ITestOutputHelper output) : base(output)
+        {
         }
     }
 }
